@@ -13,14 +13,17 @@ public static class GamesEndpoints
         new(3, "Cyberpunk 2077", "Action role-playing", 59.99m, new DateOnly(2020, 12, 10))
     ];
 
-    public static WebApplication MapGamesEndpoints(this WebApplication app)
+    public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
     {
+        var group = app.MapGroup("games");
+
         // GET /games
-        app.MapGet("games", () => games);
+        group.MapGet("/", () => games);
 
         // GET /games/{id}
-        app.MapGet(
-                "games/{id}",
+        group
+            .MapGet(
+                "/{id}",
                 (int id) =>
                 {
                     GameDto? game = games.Find(game => game.Id == id);
@@ -31,8 +34,8 @@ public static class GamesEndpoints
             .WithName(GetGameEndpointName);
 
         // POST /games
-        app.MapPost(
-            "games",
+        group.MapPost(
+            "/",
             (CreateGameDto newGame) =>
             {
                 GameDto game =
@@ -51,8 +54,8 @@ public static class GamesEndpoints
         );
 
         // PUT /games/{id}
-        app.MapPut(
-            "games/{id}",
+        group.MapPut(
+            "/{id}",
             (int id, UpdateGameDto updatedGame) =>
             {
                 var index = games.FindIndex(game => game.Id == id);
@@ -75,8 +78,8 @@ public static class GamesEndpoints
         );
 
         // DELETE /games/{id}
-        app.MapDelete(
-            "games/{id}",
+        group.MapDelete(
+            "/{id}",
             (int id) =>
             {
                 games.RemoveAll(game => game.Id == id);
@@ -85,6 +88,6 @@ public static class GamesEndpoints
             }
         );
 
-        return app;
+        return group;
     }
 }
